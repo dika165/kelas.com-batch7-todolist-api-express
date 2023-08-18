@@ -71,3 +71,24 @@ export const authUser = async (request, response, next) => {
         next(error)
     }
 }
+
+export const validateToken = async (request, response, next) => {
+    const authHeader = request.headers.authorization;
+    const token = authHeader && authHeader.split (' ')[1];
+
+    console.log(token);
+
+    if (token == null) {
+        errorResp(response, "unauthorize", 401)
+    }
+    jwt.verify(token, SECRET_KEY_TOKEN, (err, claims) => {
+        if (err) {
+            console.log(err.message)
+            errorResp(response, err.message, 403)
+        } else {
+            request.claims = claims
+            next();
+        }
+        
+    })
+}
