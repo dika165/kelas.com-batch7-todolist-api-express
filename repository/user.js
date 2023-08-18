@@ -7,7 +7,7 @@ export const getData = () => {
 }
 
 export const getDataById = (id) => {
-    const sql = "SELECT user_id, name, email, created_at FROM users WHERE user_id = ?";
+    const sql = "SELECT user_id, name, email, password, created_at FROM users WHERE user_id = ?";
     
     return dbPool.query(sql,[id]);
 }
@@ -29,4 +29,10 @@ export const updateData = (id, name, email) => {
     const result = dbPool.query(sql, value)
 
     return result;
+}
+
+export const getDataByEmail = (email) => {
+    const sql = "SELECT user_id, name, email, password FROM users WHERE email = ?";
+    
+    return dbPool.query(sql,[email]);
 }
