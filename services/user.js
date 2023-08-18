@@ -1,49 +1,34 @@
-import { nanoid } from "nanoid";
+import * as UserRepo from '../repository/user.js';
+import { successResp } from '../utils/response.js';
 
-const users = [];
-
-export const addUser = (request, response, next) => {
+export const getUsers = async (response, request, next) => {
     try {
-        let id = nanoid(6);
-        let name = request.body.name;
-        let email = request.body.email;
-        let password=request.body.password;
-        let user = {id, name, email, password}
-        users.push(user)
-    
-        return response.json(user)
-
+        const [result] = await UserRepo.getData();
+        successResp(response, "success", result)
     } catch (error) {
         next(error)
     }
     
 }
 
-export const getUser = (request, response, next) => {
+export const createUser = async (response, request, next) => {
     try {
-        return response.json(users)
-    } catch (error) {
-        next(error)
-    }
-}
-
-export const updateUser = (request, response, next) => {
-    try {
-        let id = request.params.id;
         let name = request.body.name;
         let email = request.body.email;
-        let index = users.findIndex(item => item.id == id)
-        if(index > -1) {
-            let user = users[index];
-            user.email = email;
-            user.name = name;
-            return response.json(users[index])
-        } else {
-            return response.json({
-                message: "data tidak ditemukan"
-            })
-        }
-    } catch (error) {
+        let password = request.body.password;
+        const [result] = await UserRepo.createData(name, email, password);
+        let id = result.insertId;
+        const [users] = await UserRepo.getDataById(id);
+
+        successResp(response, "success create user", users[0], 201)
+    } catch(error) {
         next(error)
     }
+    
+}
+
+export const updateUser = async (id, name, email) => {
+    const [result] = await UserRepo.updateData(id, name, email);
+
+    console.log(result)
 }
